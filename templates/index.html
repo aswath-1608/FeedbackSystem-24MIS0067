@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Feedback System - V2</title>
+    <title>Feedback System - V3</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
+            max-width: 1000px;
+            margin: 35px auto;
             padding: 20px;
             background: #f4f6f9;
         }
@@ -19,17 +19,17 @@
             color: #24344d;
         }
 
-        form, .feedback-section {
+        form, .section {
             background: white;
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
             border-radius: 8px;
         }
 
         input, select, textarea, button {
-            padding: 10px;
-            margin-top: 8px;
             box-sizing: border-box;
+            padding: 10px;
+            margin: 6px 0;
         }
 
         input, select, textarea {
@@ -37,11 +37,11 @@
         }
 
         button {
-            cursor: pointer;
             background: #2457a7;
             color: white;
             border: none;
             border-radius: 4px;
+            cursor: pointer;
         }
 
         table {
@@ -63,7 +63,23 @@
         }
 
         tr:nth-child(even) {
-            background: #f0f3f8;
+            background: #edf1f7;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-actions button,
+        .filter-actions a {
+            padding: 10px;
+        }
+
+        .filter-actions a {
+            color: #2457a7;
         }
     </style>
 </head>
@@ -71,37 +87,82 @@
 <body>
     <h1>Feedback Management System</h1>
     <p>Registration Number: 24MIS0067</p>
-    <p>Version 2: View All Feedback</p>
+    <p><strong>Version 3:</strong> Search, Filter and Sort Feedback</p>
 
-    <form action="/submit" method="POST">
+    <section class="section">
         <h2>Submit Feedback</h2>
 
-        <label for="name">Your Name:</label>
-        <input id="name" type="text" name="name" required>
+        <form action="/submit" method="POST">
+            <label for="name">Your Name:</label>
+            <input id="name" name="name" required>
 
-        <label for="rating">Rating:</label>
-        <select id="rating" name="rating" required>
-            <option value="">Select rating</option>
-            <option value="5">5 - Excellent</option>
-            <option value="4">4 - Good</option>
-            <option value="3">3 - Average</option>
-            <option value="2">2 - Poor</option>
-            <option value="1">1 - Very Poor</option>
-        </select>
+            <label for="rating">Rating:</label>
+            <select id="rating" name="rating" required>
+                <option value="">Select rating</option>
+                <option value="5">5 - Excellent</option>
+                <option value="4">4 - Good</option>
+                <option value="3">3 - Average</option>
+                <option value="2">2 - Poor</option>
+                <option value="1">1 - Very Poor</option>
+            </select>
 
-        <label for="comments">Comments:</label>
-        <textarea id="comments" name="comments" required></textarea>
+            <label for="comments">Comments:</label>
+            <textarea id="comments" name="comments" required></textarea>
 
-        <button type="submit">Submit Feedback</button>
-    </form>
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </section>
 
-    <section class="feedback-section">
-        <h2>All Submitted Feedback</h2>
+    <section class="section">
+        <h2>Filter and Sort Feedback</h2>
+
+        <form action="/" method="GET">
+            <label for="search">Search by name:</label>
+            <input id="search" name="name"
+                   value="{{ search_name }}"
+                   placeholder="Enter a name">
+
+            <label for="filter-rating">Filter by rating:</label>
+            <select id="filter-rating" name="rating">
+                <option value="">All ratings</option>
+                {% for value in ["5", "4", "3", "2", "1"] %}
+                <option value="{{ value }}"
+                    {% if rating_filter == value %}selected{% endif %}>
+                    {{ value }} / 5
+                </option>
+                {% endfor %}
+            </select>
+
+            <label for="sort">Sort by:</label>
+            <select id="sort" name="sort">
+                <option value="newest"
+                    {% if sort_order == "newest" %}selected{% endif %}>
+                    Newest first
+                </option>
+                <option value="rating_high"
+                    {% if sort_order == "rating_high" %}selected{% endif %}>
+                    Highest rating first
+                </option>
+                <option value="rating_low"
+                    {% if sort_order == "rating_low" %}selected{% endif %}>
+                    Lowest rating first
+                </option>
+            </select>
+
+            <div class="filter-actions">
+                <button type="submit">Apply Filters</button>
+                <a href="/">Clear Filters</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>Feedback Results</h2>
 
         <table>
             <thead>
                 <tr>
-                    <th>S.No.</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Rating</th>
                     <th>Comments</th>
@@ -111,14 +172,14 @@
             <tbody>
                 {% for item in feedback %}
                 <tr>
-                    <td>{{ loop.index }}</td>
+                    <td>{{ item.id }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.rating }}/5</td>
                     <td>{{ item.comments }}</td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4">No feedback submitted yet.</td>
+                    <td colspan="4">No matching feedback found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -8,10 +8,12 @@ feedback_list = []
 
 @app.route("/")
 def home():
+    # Get filter and sorting values from the URL
     search_name = request.args.get("name", "").strip().lower()
     rating_filter = request.args.get("rating", "")
     sort_order = request.args.get("sort", "newest")
 
+    # Filter feedback
     filtered_feedback = []
 
     for index, item in enumerate(feedback_list):
@@ -27,17 +29,23 @@ def home():
             "position": index
         })
 
+    # Sort feedback
     if sort_order == "rating_high":
         filtered_feedback.sort(
-            key=lambda item: int(item["rating"]), reverse=True
+            key=lambda item: int(item["rating"]),
+            reverse=True
         )
+
     elif sort_order == "rating_low":
         filtered_feedback.sort(
             key=lambda item: int(item["rating"])
         )
+
     else:
+        # Newest feedback first
         filtered_feedback.sort(
-            key=lambda item: item["position"], reverse=True
+            key=lambda item: item["position"],
+            reverse=True
         )
 
     return render_template(
