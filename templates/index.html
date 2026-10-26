@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feedback System</title>
+</head>
+<body>
+    <h1>Feedback Management System</h1>
+
+    <form action="/submit" method="POST">
+        <label>Name:</label>
+        <input type="text" name="name" required>
+        <br><br>
+
+        <label>Rating:</label>
+        <select name="rating" required>
+            <option value="">Choose rating</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Average</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Very Poor</option>
+        </select>
+        <br><br>
+
+        <label>Comments:</label>
+        <textarea name="comments" required></textarea>
+        <br><br>
+
+        <button type="submit">Submit Feedback</button>
+    </form>
+
+    <h2>Submitted Feedback</h2>
+
+    {% for item in feedback %}
+        <p>
+            {{ item.name }} |
+            Rating: {{ item.rating }} |
+            {{ item.comments }}
+        </p>
+    {% else %}
+        <p>No feedback submitted yet.</p>
+    {% endfor %}
+</body>
+</html>
